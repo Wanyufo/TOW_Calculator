@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="Stat" style="flex-grow: 0; align-self: center; justify-content: flex-start; align-items: center; flex-shrink: 0;">
+        <ui:VisualElement name="Fields" style="flex-grow: 0.2; flex-direction: row; justify-content: flex-start;">
+            <ui:Label tabindex="-1" text="L" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Input" style="flex-grow: 0.2; flex-direction: row;">
+            <ui:IntegerField value="0" name="Value" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,53 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="Stat" src="project://database/Assets/Stat.uxml?fileID=9197481963319205126&amp;guid=6e63645bf42d644409962c39d2bfee32&amp;type=3#Stat" />
+    <ui:VisualElement name="VisualElement" style="flex-grow: 0; flex-direction: row; flex-shrink: 0;">
+        <ui:VisualElement name="MyStats" style="flex-grow: 0; flex-direction: row; align-items: center; justify-content: space-between; align-self: center; flex-shrink: 0;">
+            <ui:Instance template="Stat" name="M">
+                <AttributeOverrides element-name="Stat" focusable="false" />
+                <AttributeOverrides element-name="Label" text="M" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="WS">
+                <AttributeOverrides element-name="Label" text="WS" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="BS">
+                <AttributeOverrides element-name="Label" text="BS" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="S">
+                <AttributeOverrides element-name="Label" text="S" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="T">
+                <AttributeOverrides element-name="Label" text="T" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="W">
+                <AttributeOverrides element-name="Label" text="W" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="I">
+                <AttributeOverrides element-name="Label" text="I" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="A">
+                <AttributeOverrides element-name="Label" text="A" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="Ld">
+                <AttributeOverrides element-name="Label" text="Ld" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="Armor">
+                <AttributeOverrides element-name="Label" text="Armor" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="Regen">
+                <AttributeOverrides element-name="Label" text="Regen" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="Ward">
+                <AttributeOverrides element-name="Label" text="Ward" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="AP">
+                <AttributeOverrides element-name="Label" text="AP" enable-rich-text="true" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="Bane">
+                <AttributeOverrides element-name="Label" text="Bane" />
+            </ui:Instance>
+            <ui:Instance template="Stat" name="InitiativeMod">
+                <AttributeOverrides element-name="Label" text="I Mod" />
+            </ui:Instance>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

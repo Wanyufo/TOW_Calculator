@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="Stats" src="project://database/Assets/Stats.uxml?fileID=9197481963319205126&amp;guid=b4a3c3a1b818c594fa7e17ea4f93e556&amp;type=3#Stats" />
+    <ui:VisualElement name="MyStats" style="flex-grow: 0; align-items: center; flex-shrink: 0;">
+        <ui:Label tabindex="-1" text="StatGroup" parse-escape-sequences="true" display-tooltip-when-elided="true" name="StatGroupLabel" />
+        <ui:Instance template="Stats" name="1stStats">
+            <AttributeOverrides element-name="StatBlockLabel" text="Primary Stats" />
+        </ui:Instance>
+        <ui:Instance template="Stats" name="2ndStats">
+            <AttributeOverrides element-name="StatBlockLabel" text="Secondary Stats" />
+        </ui:Instance>
+        <ui:Instance template="Stats" name="3rdStats" />
+    </ui:VisualElement>
+    <ui:VisualElement style="flex-grow: 0; flex-direction: row; flex-shrink: 0; justify-content: flex-start; align-items: stretch; align-self: center;">
+        <ui:IntegerField label="Unit Size" value="42" name="UnitSize" />
+        <ui:IntegerField label="Fighting Rank" value="42" name="FightingRankSize" />
+    </ui:VisualElement>
+</ui:UXML>
