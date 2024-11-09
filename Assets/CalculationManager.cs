@@ -2,10 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class CalculationManager : MonoBehaviour
 {
+    [SerializeField] private GameObject _barPrefab;
+
     // singleton instance
     public static CalculationManager Instance { get; private set; }
 
@@ -22,7 +25,7 @@ public class CalculationManager : MonoBehaviour
     private StatBlock[] _myUnitStats;
     private StatBlock[] _enemyUnitStats;
 
-    static int _rounds = 100;
+    static int _rounds = 100000;
     List<CombatResult> _combatResults = new List<CombatResult>();
 
     private void Start()
@@ -38,9 +41,64 @@ public class CalculationManager : MonoBehaviour
         int enemyWins = _combatResults.Count(result => result.result < 0);
         int draws = _combatResults.Count(result => result.result == 0);
 
+        double averageDamageInflicted = _combatResults.Average(result => result.DamageCaused);
+        double averageDamageTaken = _combatResults.Average(result => result.DamageSuffered);
+        averageDamageTaken = Math.Round(averageDamageTaken, 2);
+        averageDamageInflicted = Math.Round(averageDamageInflicted, 2);
+
+        int maxDamageInflicted = _combatResults.Max(result => result.DamageCaused);
+        int maxDamageSuffered = _combatResults.Max(result => result.DamageSuffered);
+
+
+        int[] damageInflictedHistogram = new int[maxDamageInflicted + 1];
+        int[] damageSufferedHistogram = new int[maxDamageSuffered + 1];
+
+        foreach (CombatResult result in _combatResults)
+        {
+            damageInflictedHistogram[result.DamageCaused]++;
+            damageSufferedHistogram[result.DamageSuffered]++;
+        }
+
+        double[] DamageInflictedInPercent = new double[damageInflictedHistogram.Length];
+        // noralize the histograms
+        for (int i = 0; i < damageInflictedHistogram.Length; i++)
+        {
+            DamageInflictedInPercent[i] = (damageInflictedHistogram[i] / (double) _rounds) * 100f;
+        }
+
+        Debug.Log("damage inflicted histogram" + string.Join(",", DamageInflictedInPercent));
+
+
+        // plot the histograms
+        for (int i = 0; i < DamageInflictedInPercent.Length; i++)
+        {
+            CreatePlotPoint(i, DamageInflictedInPercent[i]);
+        }
+
+
+        Debug.Log($"Average damage inflicted: {averageDamageInflicted}, Average damage taken: {averageDamageTaken}");
         Debug.Log($"My wins: {myWins}, Enemy wins: {enemyWins}, Draws: {draws}");
     }
 
+    private void CreatePlotPoint(int index, double value)
+    {
+        // todo sacle width to amount of data points, or decide on a fixed max width
+        // summarize the values above the max width 
+        double scaledValue = value / 10;
+        GameObject plotBar = Instantiate(_barPrefab);
+        GameObject bar = plotBar.transform.Find("Bar").gameObject;
+        bar.transform.localScale = new Vector3(1, (float) scaledValue, 1);
+        bar.transform.position = new Vector3(0.5f + index * 1.1f, (float) scaledValue / 2f, 0);
+        Canvas canvas = plotBar.transform.Find("Canvas").GetComponent<Canvas>();
+        // set Canvas hight to value
+        canvas.GetComponent<RectTransform>().sizeDelta = new Vector2(1, (float) scaledValue);
+        // set canvas position according to index
+        canvas.transform.position =
+            new Vector3(0.5f + index * 1.1f, (float) scaledValue / 2f, 0); // TODO precalc the values
+
+        canvas.transform.Find("Index").GetComponent<TMP_Text>().text = index.ToString();
+        canvas.transform.Find("Value").GetComponent<TMP_Text>().text = Math.Round(value, 2).ToString();
+    }
 
     // ====================================================================================================
     // ## simulate a single combat Combat ##
@@ -98,7 +156,7 @@ public class CalculationManager : MonoBehaviour
             MyDamageCausedInPercent = ((float) myTotalDamageInflicted / _enemyUnitSize) * 100,
         };
 
-        Debug.Log($"My damage inflicted: {myTotalDamageInflicted}, My damage taken: {myTotalDamageTaken}");
+        // Debug.Log($"My damage inflicted: {myTotalDamageInflicted}, My damage taken: {myTotalDamageTaken}");
 
         // calculate combat result
         return result;
@@ -266,10 +324,10 @@ public class CalculationManager : MonoBehaviour
 
     private void SetupMockStats()
     {
-        _myUnitSize = 10;
-        _enemyUnitSize = 10;
-        _myFightingRankSize = 5;
-        _enemyFightingRankSize = 5;
+        _myUnitSize = 40;
+        _enemyUnitSize = 40;
+        _myFightingRankSize = 20;
+        _enemyFightingRankSize = 20;
 
         _myUnitStats = new StatBlock[1];
         _myUnitStats[0].M = 4;
@@ -281,7 +339,7 @@ public class CalculationManager : MonoBehaviour
         _myUnitStats[0].I = 3;
         _myUnitStats[0].A = 1;
         _myUnitStats[0].Ld = 7;
-        _myUnitStats[0].Armor = 4;
+        _myUnitStats[0].Armor = 7;
         _myUnitStats[0].Regen = 7;
         _myUnitStats[0].Ward = 7;
 
@@ -296,7 +354,7 @@ public class CalculationManager : MonoBehaviour
         _enemyUnitStats[0].I = 2;
         _enemyUnitStats[0].A = 1;
         _enemyUnitStats[0].Ld = 7;
-        _enemyUnitStats[0].Armor = 4;
+        _enemyUnitStats[0].Armor = 7;
         _enemyUnitStats[0].Regen = 7;
         _enemyUnitStats[0].Ward = 7;
     }
