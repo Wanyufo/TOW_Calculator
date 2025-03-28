@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public class CalculationManager : MonoBehaviour
 {
@@ -30,11 +32,19 @@ public class CalculationManager : MonoBehaviour
 
     private void Start()
     {
+        Stopwatch stopwatch = new Stopwatch();
+
         SetupMockStats();
+
+        stopwatch.Start();
+
         for (int i = 0; i < _rounds; i++)
         {
             _combatResults.Add(SimulateCombat());
         }
+
+        stopwatch.Stop();
+        Debug.Log("Time elapsed: " + stopwatch.ElapsedMilliseconds + "ms");
 
         // do statistics:
         int myWins = _combatResults.Count(result => result.result > 0);
@@ -80,6 +90,7 @@ public class CalculationManager : MonoBehaviour
         Debug.Log($"My wins: {myWins}, Enemy wins: {enemyWins}, Draws: {draws}");
     }
 
+    // TODO create a "createPlot" method that takes a list of values and creates a plot
     private void CreatePlotPoint(int index, double value)
     {
         // todo sacle width to amount of data points, or decide on a fixed max width
@@ -189,6 +200,7 @@ public class CalculationManager : MonoBehaviour
         int woundsCaused = 0;
         StatBlock defenderStatBlock = new StatBlock()
         {
+            // todo Extend for multiple stat blocks
             WS = defenderUnit[0].WS,
             T = defenderUnit[0].T,
             Armor = defenderUnit[0].Armor,
@@ -268,6 +280,8 @@ public class CalculationManager : MonoBehaviour
                 {
                     crits++;
                 }
+
+               
             }
             // else
             // {
@@ -324,39 +338,43 @@ public class CalculationManager : MonoBehaviour
 
     private void SetupMockStats()
     {
-        _myUnitSize = 40;
-        _enemyUnitSize = 40;
-        _myFightingRankSize = 20;
-        _enemyFightingRankSize = 20;
+        _myUnitSize = 20;
+        _enemyUnitSize = 30;
+        _myFightingRankSize = 10;
+        _enemyFightingRankSize = 10;
 
         _myUnitStats = new StatBlock[1];
-        _myUnitStats[0].M = 4;
-        _myUnitStats[0].WS = 3;
+        _myUnitStats[0].M = 3;
+        _myUnitStats[0].WS = 4;
         _myUnitStats[0].BS = 3;
-        _myUnitStats[0].S = 3;
-        _myUnitStats[0].T = 3;
+        _myUnitStats[0].S = 5;
+        _myUnitStats[0].T = 4;
         _myUnitStats[0].W = 1;
-        _myUnitStats[0].I = 3;
+        _myUnitStats[0].I = 1;
         _myUnitStats[0].A = 1;
         _myUnitStats[0].Ld = 7;
-        _myUnitStats[0].Armor = 7;
+        _myUnitStats[0].Armor = 5;
         _myUnitStats[0].Regen = 7;
         _myUnitStats[0].Ward = 7;
+        _myUnitStats[0].AP = 2;
+        _myUnitStats[0].Bane = 1;
 
         _enemyUnitStats = new StatBlock[1];
 
         _enemyUnitStats[0].M = 4;
-        _enemyUnitStats[0].WS = 4;
+        _enemyUnitStats[0].WS = 3;
         _enemyUnitStats[0].BS = 3;
-        _enemyUnitStats[0].S = 3;
+        _enemyUnitStats[0].S = 4;
         _enemyUnitStats[0].T = 3;
         _enemyUnitStats[0].W = 1;
-        _enemyUnitStats[0].I = 2;
+        _enemyUnitStats[0].I = 3;
         _enemyUnitStats[0].A = 1;
         _enemyUnitStats[0].Ld = 7;
-        _enemyUnitStats[0].Armor = 7;
+        _enemyUnitStats[0].Armor = 6;
         _enemyUnitStats[0].Regen = 7;
         _enemyUnitStats[0].Ward = 7;
+        _enemyUnitStats[0].AP = 1;
+        _enemyUnitStats[0].Bane = 1;
     }
 
 
@@ -380,12 +398,6 @@ public class CalculationManager : MonoBehaviour
             Destroy(this);
         }
     }
-}
-
-struct CombatRoundResult
-{
-    public int UnsavedWoundsCaused;
-    public int WoundsCaused;
 }
 
 

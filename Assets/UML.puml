@@ -1,0 +1,100 @@
+﻿@startuml
+class Unit {
+    - models: Model[]
+    - standard: bool
+    - musician: bool     
+}
+
+class Model {
+    - position: vector2
+    - baseContactEnemies: Model[]
+    - Statblocks: Statblock[]
+    - attacks: Attack[]
+    - armor: byte
+    - regen: byte
+    - ward: byte
+    - killed: bool
+    - type: ModelType
+    - troopType: TroopType
+    - specialRules: SpecialRule[]
+    
+    + SimulateAttack(byte initiative, Strategy strategy): void
+    
+}
+
+struct Statblock {
+    - M: byte
+    - WS: byte
+    - BS: byte
+    - S: byte
+    - T: byte
+    - W: byte
+    - I: byte
+    - A: FancyByte
+    - Ld: byte
+}
+
+struct FancyByte {
+    - isMod: bool
+    - fixedValue: byte
+    - randomValues: RandomValue[]
+    
+    + get(): byte
+}
+
+enum RandomValue {
+    - 0
+    - D3
+    - D6
+    - Artillery    
+}
+
+enum SpecialRule {
+    - Many
+}
+
+enum TroopType {
+    - Regular Infantry
+    - Heavy Infantry
+    - Monstrous Infantry
+    - Swarm
+    - Light Cavalry
+    - Heavy Cavalry
+    - Monstrous Cavalry
+    - War Beast
+    - Light Chariot
+    - Heavy Chariot
+    - Monstrous Creature
+    - Behemoth
+    - War Machine
+}
+
+enum ModelType {
+    - Unit
+    - Champion
+    - Character 
+}
+
+
+struct Attack {
+    - statblockRef: Statblock
+    - Weapons: Weapon
+}
+
+struct Weapon {
+    - attackCount: FancyByte
+    - strength: FancyByte
+    - AP: byte
+    - armorBane: byte
+    - specialRules: SpecialRule[]
+}
+
+Unit " 1 " -right- " 1..* " Model
+Model -- " 1..* " Statblock
+Model -- " 1..* " Attack
+Attack " 0..* " -- Statblock
+Attack -- Weapon
+Model -up- ModelType
+Model -up- TroopType
+FancyByte -down- " 1..* " RandomValue
+@enduml
