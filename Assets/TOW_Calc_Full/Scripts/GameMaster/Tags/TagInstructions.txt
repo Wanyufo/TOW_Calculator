@@ -1,0 +1,61 @@
+﻿#### General Info ####
+* Any Enum can be used as a Tag
+* Objects with Tags are saved in a central Dictionary
+* A GameObject can have multiple Tags
+* The same tag can be used on multiple GameObjects
+* Tags can be used by adding Tagging scripts, or by adding the tag to an existing script
+
+    
+#### Creating a Tagging Script from the Enum "Foo"####
+Create a new script "<Foo>Tag.cs", with the following code, replacing the <placeholders> with the correct values:
+
+        ```csharp
+        using System;
+        using UnityEngine;
+        
+        namespace GameMaster.Tag
+        {
+            public class <Foo>Tag : MonoBehaviour, ITag
+            {
+                [SerializeField] public <FooLocation.Foo> smartTag;
+            
+                private void OnEnable()
+                {
+                    GM.I.TagManager.RegisterTag(smartTag, this);
+                }
+            
+                private void OnDestroy()
+                {
+                    GM.I.TagManager.DeRegisterTag(smartTag, this);
+                }
+            
+                public Enum GetTag()
+                {
+                    return smartTag;
+                }
+            }
+        }
+        ```
+
+#### Using the Tag System with any Script ####
+1) mark the script with the ITag Interface
+2) add the following code to the script ( simply append the code to the methods if they already exist)
+
+        ```csharp
+        [SerializeField] public <FooLocation.Foo> smartTag;
+        
+        private void OnEnable()
+        {
+            GM.I.TagManager.RegisterTag(smartTag, this);
+        }
+        
+        private void OnDestroy()
+        {
+            GM.I.TagManager.DeRegisterTag(smartTag, this);
+        }
+        
+        public Enum GetTag()
+        {
+            return smartTag;
+        }
+        ```
