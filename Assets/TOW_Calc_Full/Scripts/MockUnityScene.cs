@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
+using UnityEngine;
+using Vector2 = System.Numerics.Vector2;
 
 namespace TOW_Calc_Full.Scripts
 {
@@ -15,25 +16,25 @@ namespace TOW_Calc_Full.Scripts
             {
                 models1[i] = MockModel1(new Vector2(i, 0));
             }
-
             for (int i = models1.Length / 2; i < models1.Length; i++)
             {
                 models1[i] = MockModel1(new Vector2(i - models1.Length / 2, 1));
             }
-            
 
-            // place all t models in one row, adjacent to the models of Unit 1
+            // Place all models of unit 2 directly adjacent to the right of unit 1
             Model[] models2 = new Model[5];
             for (int i = 0; i < models2.Length; i++)
             {
-                models2[i] = MockModel2(new Vector2(i + models1.Length, 1));
+                // Instead of i + 10, use i + 5 so B starts at (5,1) and is adjacent to A
+                models2[i] = MockModel2(new Vector2(i + models1.Length / 2, 1));
             }
 
             Unit unit1 = new Unit(models1, true, true);
             Unit unit2 = new Unit(models2, true, true);
-            return new[] {unit1, unit2};
+            return new[] { unit1, unit2 };
         }
-// TODO Check if positions are correct, they should be adjacent to each other
+
+// Units C and D adjacent
         public Unit[] GetSideBUnits()
         {
             Model[] models1 = new Model[10];
@@ -43,34 +44,35 @@ namespace TOW_Calc_Full.Scripts
             {
                 models1[i] = MockModel1(new Vector2(i, 2));
             }
-
             for (int i = models1.Length / 2; i < models1.Length; i++)
             {
                 models1[i] = MockModel1(new Vector2(i - models1.Length / 2, 3));
             }
-            
 
-            // place all t models in one row, adjacent to the models of Unit 1
+            // Place all models of unit 2 directly adjacent to the right of unit 1
             Model[] models2 = new Model[5];
             for (int i = 0; i < models2.Length; i++)
             {
-                models2[i] = MockModel2(new Vector2(i + models1.Length, 2));
+                // Instead of i + 10, use i + 5 so D starts at (5,2) and is adjacent to C
+                models2[i] = MockModel2(new Vector2(i + models1.Length / 2, 2));
             }
 
             Unit unit1 = new Unit(models1, true, true);
             Unit unit2 = new Unit(models2, true, true);
-            return new[] {unit1, unit2};
+            return new[] { unit1, unit2 };
         }
 
-        
-        
-        // Logs a visual representation of the units' positions on a grid, with labeled axes.
-        // Each model of unit1 will be represented by 'A', unit2 by 'B', etc. Empty cells are '.'
+
+        /// <summary>
+        /// Logs a visual representation of the units' positions on a grid, with labeled axes.
+        /// Each model of unit1 will be represented by 'A', unit2 by 'B', etc. Empty cells are '.'
+        /// This version aggregates output in a string, compatible with Unity Debug.Log().
+        /// </summary>
         public void LogUnitPositions(Unit[] units)
         {
             // Gather positions and determine grid size
             List<(char symbol, Vector2 pos)> modelPositions = new List<(char, Vector2)>();
-            char[] unitSymbols = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J' };
+            char[] unitSymbols = new char[] {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
 
             int maxX = 0, maxY = 0;
 
@@ -82,8 +84,8 @@ namespace TOW_Calc_Full.Scripts
                 {
                     Vector2 pos = model.Position;
                     modelPositions.Add((symbol, pos));
-                    if (pos.X > maxX) maxX = (int)pos.X;
-                    if (pos.Y > maxY) maxY = (int)pos.Y;
+                    if (pos.X > maxX) maxX = (int) pos.X;
+                    if (pos.Y > maxY) maxY = (int) pos.Y;
                 }
             }
 
@@ -95,27 +97,35 @@ namespace TOW_Calc_Full.Scripts
 
             foreach (var (symbol, pos) in modelPositions)
             {
-                grid[(int)pos.Y, (int)pos.X] = symbol;
+                grid[(int) pos.Y, (int) pos.X] = symbol;
             }
 
-            // Print X axis labels
-            Console.Write("   "); // padding for Y axis
+            // Aggregate output in a string
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+            // X axis labels
+            sb.Append("    "); // Padding for Y axis
             for (int x = 0; x <= maxX; x++)
             {
-                Console.Write(x + " ");
+                sb.Append(x.ToString().PadLeft(2) + " ");
             }
-            Console.WriteLine();
 
-            // Print grid with Y axis labels
+            sb.AppendLine();
+
+            // Grid with Y axis labels
             for (int y = 0; y <= maxY; y++)
             {
-                Console.Write(y.ToString().PadLeft(2) + " "); // Y axis label
+                sb.Append(y.ToString().PadLeft(2) + "  "); // Y axis label
                 for (int x = 0; x <= maxX; x++)
                 {
-                    Console.Write(grid[y, x] + " ");
+                    sb.Append(grid[y, x] + "  ");
                 }
-                Console.WriteLine();
+
+                sb.AppendLine();
             }
+
+            // To Unity Console
+            Debug.Log(sb.ToString());
         }
 
         public Battle GetBattle()
@@ -125,7 +135,6 @@ namespace TOW_Calc_Full.Scripts
             Unit[] sideBUnits = GetSideBUnits();
             return new Battle(sideAUnits, sideBUnits);
         }
-
 
 
         private Model MockModel1(Vector2 position = default)

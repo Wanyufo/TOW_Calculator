@@ -2,14 +2,11 @@
 {
     public class ModelDelta
     {
-        private readonly Model _groundTruthModel;
+        
+        public bool Killed { get; set; }
+
         private readonly LocalSimulationContext _localSimulationContext;
         
-        public ModelDelta(Model groundTruthModel, LocalSimulationContext localSimulationContext)
-        {
-            _groundTruthModel = groundTruthModel;
-            _localSimulationContext = localSimulationContext;
-        }
-        
+
     }
 }

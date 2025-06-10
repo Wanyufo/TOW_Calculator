@@ -16,6 +16,11 @@ namespace TOW_Calc_Full.Scripts
             sideAUnits.CopyTo(allUnits, 0);
             sideBUnits.CopyTo(allUnits, sideAUnits.Length);
             _mockUnityScene.LogUnitPositions(allUnits);
+            
+            Initialize();
+            RunSimulation();
+
+
 
         }
 
@@ -23,12 +28,13 @@ namespace TOW_Calc_Full.Scripts
         private SimulationManager _simulationManager;
         private MockUnityScene _mockUnityScene;
     
-        public void InitializeBattle()
+        private void Initialize()
         {
             // get all the units etc form the scene and construct the Battle object
            
             _battle = _mockUnityScene.GetBattle();
-            
+            _simulationManager = new SimulationManager(_battle);
+
         }
         
         public SimulationResult RunSimulation()
