@@ -146,7 +146,7 @@ namespace TOW_Calc_Full.Scripts
                 armor: 2,
                 regen: 0,
                 ward: 0,
-                type: ModelType.None,
+                modelType: ModelType.Unit,
                 troopType: TroopType.HeavyInfantry,
                 specialRules: Array.Empty<SpecialRule>(),
                 strategy: Strategy.None
@@ -162,7 +162,7 @@ namespace TOW_Calc_Full.Scripts
                 armor: 2,
                 regen: 0,
                 ward: 0,
-                type: ModelType.None,
+                modelType: ModelType.Unit,
                 troopType: TroopType.HeavyInfantry,
                 specialRules: Array.Empty<SpecialRule>(),
                 strategy: Strategy.None
