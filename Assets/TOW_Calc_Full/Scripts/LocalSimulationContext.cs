@@ -4,13 +4,10 @@ namespace TOW_Calc_Full.Scripts
 {
     public class LocalSimulationContext
     {
-        public Dictionary<Model, ModelDelta> ModelDeltaContext => _modelDeltaContext;
-
         private int _currentInitiative;
-        private Dictionary<Model, ModelDelta> _modelDeltaContext = new Dictionary<Model, ModelDelta>();
-        private Battle _battle;
+        private BattleDelta _battle;
 
-        public LocalSimulationContext(Battle battle)
+        public LocalSimulationContext(BattleDelta battle)
         {
             _battle = battle;
             _currentInitiative = 0;
@@ -32,16 +29,16 @@ namespace TOW_Calc_Full.Scripts
             return simulationResult;
         }
 
-        private void PerformActionsForSide(Unit[] side)
+        private void PerformActionsForSide(UnitDelta[] side)
         {
             // Iterate through each unit in the side
-            foreach (Unit unit in side)
+            foreach (UnitDelta unit in side)
             {
                 // Iterate through each model in the unit
-                foreach (Model model in unit.Models)
+                foreach (ModelDelta model in unit.Models)
                 {
                     // Perform action for the model at the current initiative
-                    model.Attack(_currentInitiative, this);
+                    model.Attack(_currentInitiative);
                 }
             }
         }

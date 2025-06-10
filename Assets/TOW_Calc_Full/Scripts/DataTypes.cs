@@ -112,8 +112,8 @@ namespace TOW_Calc_Full.Scripts
 
     public enum ModelType
     {
-        None,
         Champion,
+        Unit,
         Character,
     }
 
@@ -124,6 +124,11 @@ namespace TOW_Calc_Full.Scripts
 
     public enum Strategy
     {
-        None
+        Default 
+    }
+
+    public enum ModelModifiers
+    {
+        
     }
 }
