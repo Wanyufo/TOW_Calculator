@@ -14,6 +14,7 @@ namespace TOW_Calc_Full.Scripts
 
         public Attack[] Attacks => _attacks;
 
+        // Defined as a difficulty, e.g. 5+. 
         public int Armor => _armor;
 
         public int Regen => _regen;
