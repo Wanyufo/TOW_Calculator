@@ -1,5 +1,5 @@
 ﻿using System;
-using UnityEditor;
+using System.Threading;
 
 namespace TOW_Calc_Full.Scripts
 {
@@ -29,6 +29,7 @@ namespace TOW_Calc_Full.Scripts
         }
     }
 
+    // one needs to add one Attack per A value of the model
     public struct Attack
     {
         public readonly int StatblockIndex;
@@ -45,29 +46,27 @@ namespace TOW_Calc_Full.Scripts
 
     public struct Weapon
     {
-        public readonly FancyValue AttackCount;
         public readonly FancyValue Strength;
-        public readonly bool FixedStrength;
+        public readonly bool StrengthIsAModifier;
         public readonly int AP;
         public readonly int ArmorBane;
         public readonly SpecialRule[] SpecialRules;
 
-        public Weapon(FancyValue attackCount, FancyValue strength, bool fixedStrength, int ap, int armorBane,
+        public Weapon(FancyValue strength, bool strengthIsAModifier, int ap, int armorBane,
             SpecialRule[] specialRules)
         {
-            AttackCount = attackCount;
             Strength = strength;
-            FixedStrength = fixedStrength;
+            StrengthIsAModifier = strengthIsAModifier;
             AP = ap;
             ArmorBane = armorBane;
             SpecialRules = specialRules;
         }
     }
 
-    public struct FancyValue
+    public readonly struct FancyValue
     {
-        private int fixedValue;
-        private DiceType[] randomValues;
+        private readonly int fixedValue;
+        private readonly DiceType[] randomValues;
 
         public FancyValue(int fixedValue, DiceType[] randomValues = null)
         {
@@ -75,22 +74,22 @@ namespace TOW_Calc_Full.Scripts
             this.randomValues = randomValues ?? Array.Empty<DiceType>();
         }
 
-        public int GetValue()
+        public static implicit operator int(FancyValue value)
+        {
+            return value.GetValue();
+        }
+
+        private int GetValue()
         {
             int randomValue = 0;
             foreach (DiceType die in randomValues)
             {
-                switch (die)
+                randomValue += die switch
                 {
-                    case DiceType.D3:
-                        randomValue += UnityEngine.Random.Range(1, 4);
-                        break;
-                    case DiceType.D6:
-                        randomValue += UnityEngine.Random.Range(1, 7);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                    DiceType.D3 => ThreadSafeRandom.RollD3(),
+                    DiceType.D6 => ThreadSafeRandom.RollD6(),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
             }
 
             return fixedValue + randomValue;
@@ -112,8 +111,8 @@ namespace TOW_Calc_Full.Scripts
 
     public enum ModelType
     {
-        None,
         Champion,
+        Unit,
         Character,
     }
 
@@ -124,6 +123,71 @@ namespace TOW_Calc_Full.Scripts
 
     public enum Strategy
     {
-        None
+        Default
+    }
+
+    public enum ModelModifiers
+    {
+    }
+
+
+    // TODO migrate these classes to a separate file to keep this one DataTypes only
+    public static class Matrices
+    {
+        public static readonly int[,] ToHitMatrix = new int[,]
+        {
+            //     0  1  2  3  4  5  6  7  8  9  10
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, //0
+            {0, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5}, //1
+            {0, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5}, //2
+            {0, 2, 3, 4, 4, 4, 4, 5, 5, 5, 5}, //3
+            {0, 2, 3, 3, 4, 4, 4, 4, 4, 5, 5}, //4
+            {0, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4}, //5
+            {0, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4}, //6
+            {0, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4}, //7
+            {0, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4}, //8
+            {0, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4}, //9
+            {0, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4}, //10
+        };
+
+        public static readonly int[,] ToWoundMatrix = new int[,]
+
+        {
+            //     0  1  2  3  4  5  6  7  8  9  10
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, //0
+            {0, 4, 5, 6, 6, 6, 6, 7, 7, 7, 7}, //1 // 7+ means usually impossible to wound,
+            {0, 3, 4, 5, 6, 6, 6, 6, 7, 7, 7}, //2
+            {0, 2, 3, 4, 5, 6, 6, 6, 6, 7, 7}, //3
+            {0, 2, 2, 3, 4, 5, 6, 6, 6, 6, 7}, //4
+            {0, 2, 2, 2, 3, 4, 5, 6, 6, 6, 6}, //5
+            {0, 2, 2, 2, 2, 3, 4, 5, 6, 6, 6}, //6
+            {0, 2, 2, 2, 2, 2, 3, 4, 5, 6, 6}, //7
+            {0, 2, 2, 2, 2, 2, 2, 3, 4, 5, 6}, //8
+            {0, 2, 2, 2, 2, 2, 2, 2, 3, 4, 5}, //9
+            {0, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4}, //10
+        };
+    }
+
+    public static class ThreadSafeRandom
+    {
+        private static readonly ThreadLocal<Random> random =
+            new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
+
+        public static int RollDie(int faces)
+        {
+            return random.Value.Next(1, faces + 1);
+        }
+
+        public static int RollD6()
+        {
+            return random.Value.Next(1, 7);
+        }
+
+        public static int RollD3()
+        {
+            return random.Value.Next(1, 4);
+        }
+
+        // TODO Add other dice rolls, such as: Aritllery, 2D6, 2D6Kh, 2D6Kl etc
     }
 }
